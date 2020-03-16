@@ -1,0 +1,12 @@
+runtime: nodejs
+env: flex
+
+env_variables:
+  SQL_USER: root
+  SQL_PASSWORD: '12345'
+  SQL_DATABASE: blavity_news
+  INSTANCE_CONNECTION_NAME: blavity-news:us-east1:blavity-news-database
+
+beta_settings:
+  cloud_sql_instances: blavity-news:us-east1:blavity-news-database
+  
