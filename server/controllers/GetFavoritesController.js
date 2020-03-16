@@ -1,10 +1,13 @@
 const connection = require('../database')
 
 module.exports = function(req,res,next) {
-    const ip = req.connection.remoteAddress ||
-    req.headers['x-forwarded-for'] || 
-    req.socket.remoteAddress ||
-    (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    let ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     (req.connection.socket ? req.connection.socket.remoteAddress : null);
+
+     //get only external ip
+    ip = ip.split(',')[0]
 
     connection.query(
         "SELECT post_id FROM `favorites` WHERE ip_address = ?",
