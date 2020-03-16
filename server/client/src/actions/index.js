@@ -1,4 +1,5 @@
 const localIpUrl = require('local-ip-url');
+const apiUrl = "https://blavity-news.appspot.com/api/favorites"
 
 function itemsHasErrored(status) {
     return {
@@ -24,26 +25,47 @@ export function itemsFetchData(url) {
     return (dispatch) => {
         dispatch(itemsIsLoading());
         
-        fetch(url, {
+        let postsPromise = fetch(url, {
             credentials: 'omit',
-        })
-            .then((response) => response.json())
-            .then((items) => {
-                items.articles.forEach(article => {
-                   article.isFavorite = true
+        }).then((posts) => posts.json())
+
+        let favoritesPromise = fetch(apiUrl)
+        .then((favoriteItems) => favoriteItems.json())
+        
+        Promise.all([postsPromise, favoritesPromise])
+        .then((results) => {
+            let postItems = results[0]
+            let favoriteItems = results[1]
+            postItems.articles.forEach(article => {
+                   article.isFavorite = favoriteItems.data.includes(article.url)
                 })                
-                dispatch(itemsFetchDataSuccess(items))})
-            .catch(() => {
-                dispatch(itemsHasErrored())});
-            };
+            dispatch(itemsFetchDataSuccess(postItems))})
+        .catch(() => {
+            dispatch(itemsHasErrored())});
+        };
 }
 
-export function markItemAsFavorite(item) {
-let ip = localIpUrl('public', 'ipv4')
+export function markItemAsFavorite(itemId) {
+    return (dispatch) => {
+    fetch(apiUrl, {
+        method: "POST",
+        body: {id: itemId}
+    }).then(function(response) {
+        dispatch()
+    })
+} 
 }
 
-export function revokeItemAsFavorite(item) {
-let ip = localIpUrl('public', 'ipv4')
+export function revokeItemAsFavorite(itemId) {
+    return (dispatch) => {
+    console("revoke called")
+    fetch(apiUrl, {
+    method: "DELETE",
+    body: {id: itemId}
+    }).then(function(response) {
+        dispatch()
+    })
+}
 }
 
 export function changeCountry(countryName) {

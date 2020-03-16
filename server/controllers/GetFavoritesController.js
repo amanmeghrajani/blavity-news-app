@@ -13,7 +13,11 @@ module.exports = function(req,res,next) {
         "SELECT post_id FROM `favorites` WHERE ip_address = ?",
         ip,
         function(error, results, fields) {
-            return res.status(200).json({message: "success", data: results})
+            let dataArray = []
+            results.forEach(function(result) {
+                dataArray.push(result["post_id"])
+            })
+            return res.status(200).json({message: "success", data: dataArray})
         }
     )
 }

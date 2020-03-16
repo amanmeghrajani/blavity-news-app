@@ -1,7 +1,7 @@
 const connection = require('../database')
 
 module.exports = function(req,res,next) {
-    const id = req.params.id
+    const id = req.body.id || ""
     let ip = req.headers['x-forwarded-for'] || 
      req.connection.remoteAddress || 
      req.socket.remoteAddress ||

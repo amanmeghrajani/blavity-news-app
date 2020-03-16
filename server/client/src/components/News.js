@@ -4,12 +4,17 @@ import { Card, Image, Container, Dimmer, Loader, Pagination, Button } from 'sema
 import  image  from './news-icon.png';
 import  Footer  from './Footer';
 import { PAGE_SIZE } from '../constants/constants';
-import { changePage } from '../actions';
+import { changePage, markItemAsFavorite, revokeItemAsFavorite } from '../actions';
 import moment from 'moment';
 import { MdFavorite } from "react-icons/md";
 
 class News extends Component {
-
+	
+	stopPropagation(e) {
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
+	}
+	
 	render() {
 		const { data,status } = this.props;
 		if(status==="loading")
@@ -21,7 +26,7 @@ class News extends Component {
 		else if(status==="success"){
 			return (
 			  <div>
-					<Container style={{padding:'20px'}}>
+					<Container style={{padding:'20px', zIndex:50}}>
 						<Card.Group>
 			        {!data.articles ? (null) : data.articles.map((elem,index)=> (
 				        	<Card href={elem.url} key={index} color="red" centered raised>
@@ -41,10 +46,14 @@ class News extends Component {
 				        			{moment(elem.publishedAt).format("dddd, MMM DD AT HH:mm a")}
 									<br/>
 									<br/>
-									<Button class="ui button" color={elem.isFavorite ? "red" : "green"}>
-										{elem.isFavorite ? "Remove as Favorite" : "Mark as Favorite"}
-									</Button>
 				        		</Card.Content>
+								{/* <Button disabled={false}  
+								style={{zIndex:999}} 
+								class="ui button" 
+								onClick={stopPropagation}
+									color={elem.isFavorite ? "red" : "green"} >
+									{elem.isFavorite ? "Remove as Favorite" : "Mark as Favorite"}
+								</Button> */}
 				        	</Card>
 			        ))}
 		        </Card.Group>
@@ -78,7 +87,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    changePage: (activePage) => dispatch(changePage(activePage)),
+	changePage: (activePage) => dispatch(changePage(activePage)),
+	markItemAsFavorite: (postId) => dispatch(markItemAsFavorite(postId)),
+    revokeItemAsFavorite: (postId) => dispatch(revokeItemAsFavorite(postId))
   };
 };
 

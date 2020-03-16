@@ -32,6 +32,8 @@ class App extends Component {
   }
 
 
+
+
   render() {
     if(this.props.status!=="error") {
       return (
@@ -107,7 +109,7 @@ const mapDispatchToProps = (dispatch) => {
     changeCategory: (categoryName) => dispatch(changeCategory(categoryName)),
     changePage: (activePage) => dispatch(changePage(activePage)),
     fetchData: (url) => dispatch(itemsFetchData(url))
-  };
+ };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
