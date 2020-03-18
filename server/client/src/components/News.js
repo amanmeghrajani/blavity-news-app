@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { connect } from 'react-redux';
+import {Link} from 'react-router-dom'
 import { Card, Image, Container, Dimmer, Loader, Pagination, Button } from 'semantic-ui-react';
 import  image  from './news-icon.png';
 import  Footer  from './Footer';
@@ -10,10 +13,11 @@ import { MdFavorite } from "react-icons/md";
 
 class News extends Component {
 	
-	stopPropagation(e) {
-        e.stopPropagation();
-        e.nativeEvent.stopImmediatePropagation();
-	}
+	routeChange=(url)=> {
+		let path = url;
+		let history = useHistory();
+		history.push(path);
+	  }
 	
 	render() {
 		const { data,status } = this.props;
@@ -29,7 +33,7 @@ class News extends Component {
 					<Container style={{padding:'20px', zIndex:50}}>
 						<Card.Group>
 			        {!data.articles ? (null) : data.articles.map((elem,index)=> (
-				        	<Card href={elem.url} key={index} color="red" centered raised>
+				        	<Card  key={index} color="red" centered raised>
 				        		<Image
 				        		bordered
 				        		src={
@@ -47,13 +51,21 @@ class News extends Component {
 									<br/>
 									<br/>
 				        		</Card.Content>
-								{/* <Button disabled={false}  
+								<Button disabled={false}  
+								onClick={() => this.routeChange(elem.url)}
 								style={{zIndex:999}} 
 								class="ui button" 
-								onClick={stopPropagation}
+									color={"black"} >
+									Details
+								</Button>
+								  
+								 <Button disabled={false}  
+								style={{zIndex:999}} 
+								class="ui button" 
+								onClick={() => elem.isFavorite ? this.props.revokeItemAsFavorite(elem.url) : this.props.markItemAsFavorite(elem.url)}
 									color={elem.isFavorite ? "red" : "green"} >
 									{elem.isFavorite ? "Remove as Favorite" : "Mark as Favorite"}
-								</Button> */}
+								</Button> 
 				        	</Card>
 			        ))}
 		        </Card.Group>

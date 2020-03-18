@@ -1,5 +1,10 @@
+import axios from 'axios';
+import qs from 'qs';
 const localIpUrl = require('local-ip-url');
 const apiUrl = "https://blavity-news.appspot.com/api/favorites"
+let lastUrl = ""
+
+
 
 function itemsHasErrored(status) {
     return {
@@ -22,9 +27,12 @@ function itemsFetchDataSuccess(items) {
 }
 
 export function itemsFetchData(url) {
+    lastUrl = url
+    console.log("called alspp")
+
     return (dispatch) => {
         dispatch(itemsIsLoading());
-        
+        console.log("called alsp")
         let postsPromise = fetch(url, {
             credentials: 'omit',
         }).then((posts) => posts.json())
@@ -46,24 +54,34 @@ export function itemsFetchData(url) {
 }
 
 export function markItemAsFavorite(itemId) {
+    console.log(itemId)
     return (dispatch) => {
-    fetch(apiUrl, {
-        method: "POST",
-        body: {id: itemId}
-    }).then(function(response) {
-        dispatch()
+const data = {"id": itemId};
+const options = {
+  method: 'POST',
+  headers: { 'content-type': 'application/x-www-form-urlencoded' },
+  data: qs.stringify(data),
+  url: apiUrl 
+};
+axios(options).then(function(response) {
+        itemsFetchData(lastUrl)
     })
 } 
 }
 
 export function revokeItemAsFavorite(itemId) {
     return (dispatch) => {
-    console("revoke called")
-    fetch(apiUrl, {
-    method: "DELETE",
-    body: {id: itemId}
-    }).then(function(response) {
-        dispatch()
+        const data = {"id": itemId};
+        const options = {
+          method: 'DELETE',
+          headers: { 'content-type': 'application/x-www-form-urlencoded' },
+          data: qs.stringify(data),
+          url: apiUrl 
+        };
+        axios(options).then(function(response) {
+                itemsFetchData(lastUrl)
+            }).then(function(response) {
+        itemsFetchData(lastUrl)
     })
 }
 }
