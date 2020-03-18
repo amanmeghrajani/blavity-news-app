@@ -45,27 +45,18 @@ export function itemsFetchData(url) {
         };
 }
 
-export function markItemAsFavorite(itemId) {
-    return (dispatch) => {
-    fetch(apiUrl, {
-        method: "POST",
-        body: {id: itemId}
-    }).then(function(response) {
+export function markItemAsFavorite(item) {
+    let markFavoritePromise = fetch(apiUrl, {
+        method: 'POST',
+        body: {"id" : item.url}
+    }).then((response) => {
         dispatch()
     })
-} 
 }
 
-export function revokeItemAsFavorite(itemId) {
-    return (dispatch) => {
-    console("revoke called")
-    fetch(apiUrl, {
-    method: "DELETE",
-    body: {id: itemId}
-    }).then(function(response) {
-        dispatch()
-    })
-}
+export function revokeItemAsFavorite(item) {
+
+
 }
 
 export function changeCountry(countryName) {
