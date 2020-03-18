@@ -1,4 +1,4 @@
-import { LOADING, SUCCESS, ERROR, COUNTRY_CHANGED, CATEGORY_CHANGED, PAGE_CHANGED } from '../constants/constants';
+import { LOADING, SUCCESS, ERROR, COUNTRY_CHANGED, CATEGORY_CHANGED, PAGE_CHANGED, ACTIVE_URL_CHANGED } from '../constants/constants';
 
 const init = {
 	data: [],
@@ -7,6 +7,7 @@ const init = {
 	country: 'us',
 	category: 'Business',
 	activePage: 1,
+	activeUrl: ""
 };
 
 export default (state = init, action) => {
@@ -14,7 +15,7 @@ export default (state = init, action) => {
 		case LOADING:
 			return {...state,status:"loading"}
 		case SUCCESS:
-			return {...state,status:"success", data: action.items}
+			return {...state,status:"success", data: action.items, activeUrl: action.activeUrl}
 		case ERROR :
 			return {...state,status:"error", statusCode: action.statusCode}
 		case COUNTRY_CHANGED :
@@ -23,6 +24,8 @@ export default (state = init, action) => {
 			return {...state,category:action.categoryName}
 		case PAGE_CHANGED :
 			return {...state,activePage:action.activePage}
+		case ACTIVE_URL_CHANGED: 
+			return {...state, activeUrl: action.activeUrl}
 		default:
 					return state;
 	}

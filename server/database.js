@@ -13,6 +13,9 @@ if (
     process.env.NODE_ENV === 'production'
   ) {
     config.socketPath = `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`;
+  } else {
+    config.host= "localhost",
+    config.port= 3306
   }
 
 

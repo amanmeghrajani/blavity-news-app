@@ -32,6 +32,8 @@
     "eject": "react-scripts eject",
     "deploy": "npm run build && gh-pages -d build"
   },
+  "proxy": "http://localhost:8080",
+
   "browserslist": {
     "production": [
       ">0.2%",

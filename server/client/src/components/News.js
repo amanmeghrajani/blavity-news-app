@@ -7,17 +7,19 @@ import { Card, Image, Container, Dimmer, Loader, Pagination, Button } from 'sema
 import  image  from './news-icon.png';
 import  Footer  from './Footer';
 import { PAGE_SIZE } from '../constants/constants';
-import { changePage, markItemAsFavorite, revokeItemAsFavorite } from '../actions';
+import { changePage, markItemAsFavorite, revokeItemAsFavorite, itemsFetchData } from '../actions';
 import moment from 'moment';
 import { MdFavorite } from "react-icons/md";
 
 class News extends Component {
 	
 	routeChange=(url)=> {
-		let path = url;
-		let history = useHistory();
-		history.push(path);
+		window.open(url, "_blank");
 	  }
+	
+	forceUpdateData=() => {
+		this.props.fetchData(this.props.activeUrl)
+	}
 	
 	render() {
 		const { data,status } = this.props;
@@ -56,15 +58,15 @@ class News extends Component {
 								style={{zIndex:999}} 
 								class="ui button" 
 									color={"black"} >
-									Details
+									View Full Post
 								</Button>
 								  
 								 <Button disabled={false}  
 								style={{zIndex:999}} 
 								class="ui button" 
-								onClick={() => elem.isFavorite ? this.props.revokeItemAsFavorite(elem.url) : this.props.markItemAsFavorite(elem.url)}
+								onClick={() => elem.isFavorite ? this.props.revokeItemAsFavorite(data.articles, index, this.forceUpdateData) : this.props.markItemAsFavorite(data.articles, index, this.forceUpdateData)}
 									color={elem.isFavorite ? "red" : "green"} >
-									{elem.isFavorite ? "Remove as Favorite" : "Mark as Favorite"}
+									{elem.isFavorite ? "Remove From Saved Items" : "Save For Later"}
 								</Button> 
 				        	</Card>
 			        ))}
@@ -93,15 +95,17 @@ const mapStateToProps = (state) => {
   return {
   	activePage: state.activePage,
   	data : state.data,
-  	status : state.status,
+	status : state.status,
+	activeUrl: state.activeUrl  
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
 	changePage: (activePage) => dispatch(changePage(activePage)),
-	markItemAsFavorite: (postId) => dispatch(markItemAsFavorite(postId)),
-    revokeItemAsFavorite: (postId) => dispatch(revokeItemAsFavorite(postId))
+	markItemAsFavorite: (items, index, callback) => dispatch(markItemAsFavorite(items, index, callback)),
+	revokeItemAsFavorite: (items, index, callback) => dispatch(revokeItemAsFavorite(items, index, callback)),
+	fetchData: (url) => dispatch(itemsFetchData(url))
   };
 };
 

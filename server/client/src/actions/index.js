@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 const localIpUrl = require('local-ip-url');
-const apiUrl = "https://blavity-news.appspot.com/api/favorites"
+const apiUrl =  "https://blavity-news.appspot.com/api/favorites"
 let lastUrl = ""
 
 
@@ -9,7 +9,7 @@ let lastUrl = ""
 function itemsHasErrored(status) {
     return {
         type: 'ERROR',
-        statusCode:status
+        statusCode: status
     };
 }
 
@@ -19,10 +19,11 @@ function itemsIsLoading() {
     };
 }
 
-function itemsFetchDataSuccess(items) {
+function itemsFetchDataSuccess(items, activeUrl) {
     return {
         type: 'SUCCESS',
-        items: items
+        items: items,
+        activeUrl: activeUrl
     };
 }
 
@@ -38,51 +39,61 @@ export function itemsFetchData(url) {
         }).then((posts) => posts.json())
 
         let favoritesPromise = fetch(apiUrl)
-        .then((favoriteItems) => favoriteItems.json())
-        
+            .then((favoriteItems) => favoriteItems.json())
+
         Promise.all([postsPromise, favoritesPromise])
-        .then((results) => {
-            let postItems = results[0]
-            let favoriteItems = results[1]
-            postItems.articles.forEach(article => {
-                   article.isFavorite = favoriteItems.data.includes(article.url)
-                })                
-            dispatch(itemsFetchDataSuccess(postItems))})
-        .catch(() => {
-            dispatch(itemsHasErrored())});
+            .then((results) => {
+                let postItems = results[0]
+                let favoriteItems = results[1]
+                postItems.articles.forEach(article => {
+                    console.log(favoriteItems, postItems)
+                    article.isFavorite = favoriteItems.data.includes(article.url)
+                })
+                dispatch(itemsFetchDataSuccess(postItems, url))
+            })
+            .catch(() => {
+                dispatch(itemsHasErrored())
+            });
+    };
+}
+
+export function markItemAsFavorite(items, index, cb) {
+    console.log(items, index)
+    return (dispatch) => {
+        const data = {
+            "id": items[index].url
         };
-}
-
-export function markItemAsFavorite(itemId) {
-    console.log(itemId)
-    return (dispatch) => {
-const data = {"id": itemId};
-const options = {
-  method: 'POST',
-  headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  data: qs.stringify(data),
-  url: apiUrl 
-};
-axios(options).then(function(response) {
-        itemsFetchData(lastUrl)
-    })
-}
-
-export function revokeItemAsFavorite(itemId) {
-    return (dispatch) => {
-        const data = {"id": itemId};
         const options = {
-          method: 'DELETE',
-          headers: { 'content-type': 'application/x-www-form-urlencoded' },
-          data: qs.stringify(data),
-          url: apiUrl 
+            method: 'POST',
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            data: qs.stringify(data),
+            url: apiUrl
         };
-        axios(options).then(function(response) {
-                itemsFetchData(lastUrl)
-            }).then(function(response) {
-        itemsFetchData(lastUrl)
-    })
+        axios(options).then(function (response) {
+            cb()
+        })
+    }
 }
+
+export function revokeItemAsFavorite(items, index, cb) {
+    return (dispatch) => {
+        const data = {
+            "id": items[index].url
+        };
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded'
+            },
+            data: qs.stringify(data),
+            url: apiUrl
+        };
+        axios(options).then(function (response) {
+            cb()
+        })
+    }
 }
 
 export function changeCountry(countryName) {
@@ -104,5 +115,4 @@ export function changePage(activePage) {
         type: 'PAGE_CHANGED',
         activePage
     }
-}
 }

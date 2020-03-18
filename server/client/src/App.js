@@ -99,7 +99,8 @@ const mapStateToProps = (state) => {
     totalResults: state.data.totalResults,
     country: state.country,
     category: state.category,
-    activePage: state.activePage
+    activePage: state.activePage,
+    activeUrl : state.activeUrl
   };
 };
 
